@@ -1,0 +1,29 @@
+name: Daily Commits Bot
+
+on:
+  schedule:
+    - cron: "0 12 * * *" # todos los días a las 12:00 UTC (09:00 Argentina)
+  workflow_dispatch: # te permite ejecutarlo manualmente desde Actions
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Git
+        run: |
+          git config user.name "Commit Bot"
+          git config user.email "bot@example.com"
+
+      - name: Generate random commits
+        run: |
+          COMMITS=$(( (RANDOM % 10) + 1 ))
+          for i in $(seq 1 $COMMITS)
+          do
+            echo "$(date) - Commit #$i" >> activity.log
+            git add activity.log
+            git commit -m "Auto commit $i on $(date)"
+          done
+          git push
