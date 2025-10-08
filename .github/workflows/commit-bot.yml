@@ -5,7 +5,7 @@ permissions:
 
 on:
   schedule:
-    - cron: "0 12 * * *"
+    - cron: "0 12 * * *" # Corre todos los días a las 12:00 UTC
   workflow_dispatch:
 
 jobs:
@@ -23,14 +23,16 @@ jobs:
           git config user.email "bot@example.com"
 
       - name: Generate random commits
+        shell: bash
         run: |
           COMMITS=$(( (RANDOM % 10) + 1 ))
           for i in $(seq 1 $COMMITS)
           do
-            echo "$(date) - Commit #$i" >> activity.log
+            # Agrega timestamp con nanosegundos para asegurar cambios únicos
+            echo "$(date +%s%N) - Commit #$i" >> activity.log
             git add activity.log
-            git commit -m "Auto commit $i on $(date)" || echo "No changes to commit"
+            git commit -m "Auto commit #$i on $(date)" || echo "No changes to commit"
           done
 
       - name: Push changes
-        run: git push
+        run: git push origin HEAD
